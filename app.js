@@ -83,12 +83,12 @@
     'a', 'an', 'the', 'and', 'but', 'or', 'for', 'nor', 'on', 'at', 'to', 'from', 'by', 'with', 'in', 'of', 'off'
   ]);
 
-  function formatCourseTitle(title) {
+  function formatCourseTitle(title, maxLen = 46) {
     if (!title || typeof title !== 'string') return '';
     // If it contains Thai characters, preserve as is
     if (/[\u0E00-\u0E7F]/.test(title)) return title.trim();
 
-    return title.trim().split(/\s+/).map((word, wordIndex) => {
+    const formatted = title.trim().split(/\s+/).map((word, wordIndex) => {
       const openParen = word.startsWith('(') ? '(' : '';
       const closeParen = word.endsWith(')') ? ')' : '';
       let clean = word.replace(/^\(+|\)+$/g, '');
@@ -124,6 +124,21 @@
 
       return openParen + (clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase()) + closeParen;
     }).join(' ');
+
+    // Double protection: if exceptionally long, truncate at word boundary so it cleanly fits 2 lines without leaking line 3
+    if (formatted.length > maxLen) {
+      const words = formatted.split(' ');
+      let result = '';
+      for (const w of words) {
+        if ((result + ' ' + w).trim().length > maxLen - 2) {
+          return result.trim() + '...';
+        }
+        result = (result + ' ' + w).trim();
+      }
+      return result + '...';
+    }
+
+    return formatted;
   }
 
   // Application State
