@@ -113,21 +113,22 @@ html, body {
 }
 
 .brand-mark {
-  width: 32px;
-  height: 32px;
-  display: grid;
-  place-items: center;
-  background: var(--accent-soft);
-  color: var(--accent-primary);
-  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
   flex-shrink: 0;
 }
 
 .brand-logo-img {
-  width: 22px;
-  height: 22px;
-  border-radius: 5px;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
   display: block;
+  object-fit: contain;
+  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.22);
 }
 
 .app-title {
@@ -2971,6 +2972,12 @@ body.is-drag-active * {
   .brand-mark {
     width: 24px;
     height: 24px;
+  }
+
+  .brand-logo-img {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
   }
 
   .app-title {
