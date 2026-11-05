@@ -9,7 +9,8 @@
     { "src": "favicon.ico", "use": "@vercel/static" },
     { "src": "favicon-32x32.png", "use": "@vercel/static" },
     { "src": "apple-touch-icon.png", "use": "@vercel/static" },
-    { "src": "og-banner.png", "use": "@vercel/static" }
+    { "src": "og-banner.png", "use": "@vercel/static" },
+    { "src": "og-banner-v2.png", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/favicon.ico", "dest": "/favicon.ico" },
@@ -17,6 +18,7 @@
     { "src": "/favicon-32x32.png", "dest": "/favicon-32x32.png" },
     { "src": "/apple-touch-icon.png", "dest": "/apple-touch-icon.png" },
     { "src": "/og-banner.png", "dest": "/og-banner.png" },
+    { "src": "/og-banner-v2.png", "dest": "/og-banner-v2.png" },
     { "src": "/styles.css", "dest": "/styles.css" },
     { "src": "/app.js", "dest": "/app.js" },
     { "src": "/subjects_data.js", "dest": "/subjects_data.js" },
