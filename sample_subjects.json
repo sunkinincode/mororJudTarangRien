@@ -1,0 +1,69 @@
+[
+  {
+    "offerId": "2569200318640249",
+    "code": "322-102",
+    "nameTh": "แคลคูลัส 2",
+    "nameEn": "CALCULUS II",
+    "faculty": "คณะวิทยาศาสตร์",
+    "campusName": "วิทยาเขตหาดใหญ่",
+    "credits": "3((3)-0-6) หน่วยกิต",
+    "detailUrl": "https://sis.psu.ac.th/explore/subjects/2569200318640249/2/2569/01?term=2&year=2569&c=01&keyword=322-102",
+    "semester": "2/2569",
+    "department": "สาขาวิชาวิทยาศาสตร์การคำนวณ",
+    "campus": "วิทยาเขตหาดใหญ่",
+    "descriptionTh": "",
+    "sections": [
+      {
+        "section": "01",
+        "seats": "70 ที่นั่ง",
+        "badges": [],
+        "studentGroup": "คณิตศาสตร์1 (หลักสูตรปรับปรุง 2569)",
+        "schedules": [
+          {
+            "dayTime": "อังคาร 08:00–09:50, พฤหัส 10:00–11:50",
+            "room": "M311",
+            "instructors": [
+              "พริม พลันสังเกตุ"
+            ]
+          }
+        ],
+        "midtermExam": "15 ม.ค. 2570 13:30–16:30",
+        "finalExam": "11 มี.ค. 2570 09:00–12:00"
+      }
+    ]
+  },
+  {
+    "offerId": "2569200193030249",
+    "code": "322-102",
+    "nameTh": "แคลคูลัส 2",
+    "nameEn": "CALCULUS II",
+    "faculty": "คณะวิทยาศาสตร์",
+    "campusName": "วิทยาเขตหาดใหญ่",
+    "credits": "3((3)-0-6) หน่วยกิต",
+    "detailUrl": "https://sis.psu.ac.th/explore/subjects/2569200193030249/2/2569/01?term=2&year=2569&c=01&keyword=322-102",
+    "semester": "2/2569",
+    "department": "สาขาวิชาวิทยาศาสตร์การคำนวณ",
+    "campus": "วิทยาเขตหาดใหญ่",
+    "descriptionTh": "อนุกรมอนันต์ ฟังก์ชันหลายตัวแปร ลิมิตและความต่อเนื่องของฟังก์ชันหลายตัวแปร อนุพันธ์ย่อยและการประยุกต์ สมการเชิงอนุพันธ์สามัญอันดับที่หนึ่ง สมการเชิงอนุพันธ์สามัญเชิงเส้นอันดับที่สองที่มีสัมประสิทธิ์เป็นค่าคงตัว ผลการแปลงลาปลาซและการประยุกต์",
+    "sections": [
+      {
+        "section": "01",
+        "seats": "120 ที่นั่ง",
+        "badges": [],
+        "studentGroup": "วิทยาศาสตร์กายภาพ (รหัสก่อน 69)",
+        "schedules": [
+          {
+            "dayTime": "อังคาร 08:00–09:50, พุธ 13:00–14:50",
+            "room": "L2, -",
+            "instructors": [
+              "อมรรัตน์ รัตนะ"
+            ]
+          }
+        ],
+        "midtermExam": "15 ม.ค. 2570 13:30–16:30",
+        "finalExam": "11 มี.ค. 2570 13:30–16:30"
+      }
+    ],
+    "descriptionEn": "Infinite series; functions of several variables; limits and continuity of several variables; partial derivatives and applications; ordinary differential equations of first order; linear ordinary differential equations of second order with constant coefficients; Laplace transforms and applications"
+  }
+]

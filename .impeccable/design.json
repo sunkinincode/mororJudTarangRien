@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-03T17:17:30+07:00",
+  "title": "Design System: มอ.จัดตารางเรียน (PSU Course Studio)",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Deep Andaman Navy",
+        "canonical": "#003C71",
+        "tonalRamp": ["#001830", "#002649", "#003C71", "#0F528C", "#2B6CA8", "#5A93C7", "#9CC2E6", "#E0EEF9"]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Deep Trench Navy",
+        "canonical": "#002B52",
+        "tonalRamp": ["#001224", "#001E3B", "#002B52", "#003C71", "#1B578C", "#4B80B0", "#8BB3D6", "#D6E6F5"]
+      },
+      "accent-amber": {
+        "role": "secondary",
+        "displayName": "Drafting Amber",
+        "canonical": "#D97706",
+        "tonalRamp": ["#451A03", "#78350F", "#92400E", "#B45309", "#D97706", "#F59E0B", "#FCD34D", "#FEF3C7"]
+      },
+      "accent-sritrang": {
+        "role": "secondary",
+        "displayName": "Sri-Trang Orchid",
+        "canonical": "#6D59A8",
+        "tonalRamp": ["#231B3B", "#362A59", "#4C3C7A", "#6D59A8", "#8B78C2", "#ACA0D6", "#CFC8EA", "#EFEBF9"]
+      },
+      "danger-vermilion": {
+        "role": "tertiary",
+        "displayName": "Clash Vermilion",
+        "canonical": "#DC2626",
+        "tonalRamp": ["#450A0A", "#7F1D1D", "#991B1B", "#B91C1C", "#DC2626", "#EF4444", "#FCA5A5", "#FEE2E2"]
+      },
+      "success-emerald": {
+        "role": "tertiary",
+        "displayName": "Registration Emerald",
+        "canonical": "#059669",
+        "tonalRamp": ["#022C22", "#064E3B", "#065F46", "#047857", "#059669", "#10B981", "#6EE7B7", "#D1FAE5"]
+      },
+      "vellum-paper": {
+        "role": "neutral",
+        "displayName": "Warm Vellum Paper",
+        "canonical": "#F6F4EF",
+        "tonalRamp": ["#23211D", "#3F3C35", "#635E54", "#8C867A", "#B8B2A6", "#D8D3C8", "#EFECE4", "#F6F4EF"]
+      },
+      "surface-panel": {
+        "role": "neutral",
+        "displayName": "Crisp Studio Sheet",
+        "canonical": "#FFFFFF",
+        "tonalRamp": ["#1E293B", "#334155", "#475569", "#64748B", "#94A3B8", "#CBD5E1", "#F1F5F9", "#FFFFFF"]
+      },
+      "surface-subtle": {
+        "role": "neutral",
+        "displayName": "Recessed Tracing Tray",
+        "canonical": "#EFECE4",
+        "tonalRamp": ["#26241F", "#454139", "#6B6559", "#948D7F", "#BDB6A7", "#D8D3C8", "#EFECE4", "#FAF8F5"]
+      },
+      "ink-primary": {
+        "role": "neutral",
+        "displayName": "Drafting Charcoal Ink",
+        "canonical": "#141D2B",
+        "tonalRamp": ["#0B1018", "#141D2B", "#1E2B3E", "#2E3F57", "#475569", "#64748B", "#94A3B8", "#E2E8F0"]
+      },
+      "ink-secondary": {
+        "role": "neutral",
+        "displayName": "Graphite Slate",
+        "canonical": "#475569",
+        "tonalRamp": ["#0F172A", "#1E293B", "#334155", "#475569", "#64748B", "#94A3B8", "#CBD5E1", "#F1F5F9"]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Calibrated Muted Slate",
+        "canonical": "#64748B",
+        "tonalRamp": ["#1E293B", "#334155", "#475569", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0", "#F8FAFC"]
+      },
+      "hairline-rule": {
+        "role": "neutral",
+        "displayName": "Engineering Hairline",
+        "canonical": "#D8D3C8",
+        "tonalRamp": ["#2B2823", "#4A463E", "#6E695E", "#969083", "#B8B2A6", "#D8D3C8", "#EAE6DF", "#F6F4EF"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display Header",
+        "purpose": "Studio header title and exported PNG schedule masthead."
+      },
+      "headline": {
+        "displayName": "Modal & Drawer Headline",
+        "purpose": "Dialog titles, inspector headings, and summary sheet headers."
+      },
+      "title": {
+        "displayName": "Course & Action Title",
+        "purpose": "Thai/English course titles inside catalog cards and primary buttons."
+      },
+      "body": {
+        "displayName": "Studio Body Copy",
+        "purpose": "Course descriptions, instructor names, student group conditions, and search inputs."
+      },
+      "label": {
+        "displayName": "Tabular Coordinate Label",
+        "purpose": "6-digit PSU course codes, SEC badges, time ruler ticks, and credit counters."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-sm",
+        "value": "0 2px 6px rgba(20, 29, 43, 0.04)",
+        "purpose": "Subtle resting lift on catalog cards and Lucite course blocks."
+      },
+      {
+        "name": "shadow-md",
+        "value": "0 8px 24px rgba(20, 29, 43, 0.08)",
+        "purpose": "Floating studio backdrop dock and hovered course cards."
+      },
+      {
+        "name": "shadow-drag",
+        "value": "0 18px 42px rgba(20, 29, 43, 0.18)",
+        "purpose": "Active dragged course block elevation and modal dialogs."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Snappy, physical studio settling curve for drag-and-drop and credit bar scaling."
+      },
+      {
+        "name": "ease-spring",
+        "value": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "purpose": "Tactile lift when grabbing a Lucite course block off the light-table."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1440px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Studio Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary action button for high-DPI PNG export and modal confirmation.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg><span>Export รูปตารางเรียน</span></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 8px; font-family: 'IBM Plex Sans Thai', sans-serif; font-size: 0.84rem; font-weight: 600; background: #003C71; color: #FFFFFF; border: 1px solid #003C71; cursor: pointer; box-shadow: 0 2px 6px rgba(0, 60, 113, 0.2); transition: background 0.15s ease, transform 0.15s ease; } .ds-btn-primary:hover { background: #002B52; transform: translateY(-1px); } .ds-btn-primary:focus-visible { outline: 2px solid #D97706; outline-offset: 2px; }"
+    },
+    {
+      "name": "Custom Subject Dashed Button",
+      "kind": "button",
+      "refersTo": "button-accent",
+      "description": "Dashed architectural drafting button for adding a custom user-authored course.",
+      "html": "<button class=\"ds-btn-accent\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"><path d=\"M12 5v14M5 12h14\"/></svg><span>เพิ่มวิชาเอง</span></button>",
+      "css": ".ds-btn-accent { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 8px; font-family: 'IBM Plex Sans Thai', sans-serif; font-size: 0.84rem; font-weight: 600; background: #FFFFFF; color: #003C71; border: 1.5px dashed #003C71; cursor: pointer; transition: background 0.15s ease, transform 0.15s ease; } .ds-btn-accent:hover { background: rgba(0, 60, 113, 0.06); transform: translateY(-1px); } .ds-btn-accent:focus-visible { outline: 2px solid #003C71; outline-offset: 2px; }"
+    },
+    {
+      "name": "Campus Filter Chip",
+      "kind": "chip",
+      "refersTo": "chip-campus",
+      "description": "Pill filter chip for switching between PSU campuses with live subject count.",
+      "html": "<div class=\"ds-chip-group\"><button class=\"ds-chip is-active\">ทุกวิทยาเขต <span class=\"ds-chip-count\">4,039</span></button><button class=\"ds-chip\">หาดใหญ่</button><button class=\"ds-chip\">ปัตตานี</button></div>",
+      "css": ".ds-chip-group { display: flex; gap: 6px; align-items: center; } .ds-chip { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 9999px; font-family: 'IBM Plex Sans Thai', sans-serif; font-size: 0.75rem; font-weight: 600; background: #FFFFFF; color: #475569; border: 1px solid #D8D3C8; cursor: pointer; transition: all 0.15s ease; } .ds-chip:hover { border-color: #141D2B; color: #141D2B; } .ds-chip.is-active { background: #003C71; color: #FFFFFF; border-color: #003C71; } .ds-chip-count { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; padding: 1px 5px; border-radius: 9999px; background: rgba(255, 255, 255, 0.2); }"
+    },
+    {
+      "name": "Catalog Search Field",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "Recessed tracing-tray search input for filtering 4,039 PSU subjects by code, name, or instructor.",
+      "html": "<div class=\"ds-search-box\"><svg class=\"ds-search-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><input type=\"text\" class=\"ds-search-input\" placeholder=\"ค้นหารหัสวิชา, ชื่อวิชาไทย/อังกฤษ, อาจารย์...\" value=\"240-101\" /></div>",
+      "css": ".ds-search-box { position: relative; display: flex; align-items: center; max-width: 340px; } .ds-search-icon { position: absolute; left: 11px; color: #64748B; pointer-events: none; } .ds-search-input { width: 100%; padding: 10px 14px 10px 36px; border-radius: 8px; border: 1px solid #D8D3C8; background: #EFECE4; color: #141D2B; font-family: 'IBM Plex Sans Thai', sans-serif; font-size: 0.85rem; transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease; } .ds-search-input:focus { outline: none; border-color: #003C71; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(0, 60, 113, 0.12); }"
+    },
+    {
+      "name": "Lucite Course Film Block",
+      "kind": "custom",
+      "refersTo": "card-catalog",
+      "description": "Translucent acrylic course strip placed on the 7-day light-table matrix with 4px left color spine and tabular section badge.",
+      "html": "<div class=\"ds-course-block\"><div class=\"ds-block-top\"><span class=\"ds-block-code\">240-101</span><span class=\"ds-block-sec\">SEC 01</span></div><div class=\"ds-block-title\">การเขียนโปรแกรมคอมพิวเตอร์ 1</div><div class=\"ds-block-meta\"><span>📍 ВSc302</span><span>09:00-11:00</span></div></div>",
+      "css": ".ds-course-block { width: 210px; padding: 6px 8px; border-radius: 8px; background: rgba(219, 234, 254, 0.88); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(37, 99, 235, 0.35); border-left: 4px solid #2563EB; color: #1E3A8A; box-shadow: 0 2px 6px rgba(20, 29, 43, 0.04); cursor: grab; transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease; font-family: 'IBM Plex Sans Thai', sans-serif; } .ds-course-block:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); } .ds-block-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; } .ds-block-code { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-block-sec { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 700; padding: 1px 5px; border-radius: 4px; background: rgba(0, 0, 0, 0.1); } .ds-block-title { font-size: 0.76rem; font-weight: 700; line-height: 1.32; margin-bottom: 4px; } .ds-block-meta { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; display: flex; gap: 8px; opacity: 0.85; }"
+    },
+    {
+      "name": "Course Catalog Card",
+      "kind": "card",
+      "refersTo": "card-catalog",
+      "description": "Expandable course card in the left catalog drawer showing code, credits, campus, and quick-add action.",
+      "html": "<div class=\"ds-catalog-card\"><div class=\"ds-card-top\"><div class=\"ds-card-badges\"><span class=\"ds-code-badge\">344-211</span><span class=\"ds-credit-badge\">3(3-0-6)</span><span class=\"ds-campus-tag\">หาดใหญ่</span></div><button class=\"ds-quick-add\">+ เพิ่ม</button></div><div class=\"ds-card-title-th\">โครงสร้างข้อมูลและอัลกอริทึม</div><div class=\"ds-card-title-en\">Data Structures and Algorithms</div></div>",
+      "css": ".ds-catalog-card { background: #FFFFFF; border: 1px solid #D8D3C8; border-radius: 12px; padding: 12px; box-shadow: 0 2px 6px rgba(20, 29, 43, 0.04); font-family: 'IBM Plex Sans Thai', sans-serif; transition: border-color 0.15s ease, box-shadow 0.15s ease; max-width: 340px; } .ds-catalog-card:hover { border-color: #003C71; box-shadow: 0 8px 24px rgba(20, 29, 43, 0.08); } .ds-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; } .ds-card-badges { display: flex; gap: 5px; align-items: center; } .ds-code-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 700; color: #003C71; background: rgba(0, 60, 113, 0.08); padding: 2px 7px; border-radius: 5px; } .ds-credit-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #64748B; background: #EFECE4; padding: 2px 6px; border-radius: 4px; } .ds-campus-tag { font-size: 0.68rem; font-weight: 600; color: #475569; padding: 1px 6px; border-radius: 4px; border: 1px solid #D8D3C8; } .ds-quick-add { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; border: 1px solid #003C71; background: #FFFFFF; color: #003C71; cursor: pointer; } .ds-quick-add:hover { background: #003C71; color: #FFFFFF; } .ds-card-title-th { font-size: 0.9rem; font-weight: 700; color: #141D2B; line-height: 1.35; } .ds-card-title-en { font-size: 0.76rem; color: #64748B; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Architectural Drafting Light-Table",
+    "overview": "มอ.จัดตารางเรียน treats semester schedule planning as a physical studio craft rather than a bureaucratic spreadsheet chore. The interface is modeled after an illuminated architectural drafting table: warm vellum drafting paper (#F6F4EF), exposed 1px ruling hairlines (#D8D3C8), and translucent Lucite film course blocks that stack, slide, and lock cleanly onto a calibrated 7-day × half-hour time matrix.\n\nBecause students routinely customize their timetable with personal wallpapers—from campus photos and anime illustrations to dark-mode gradients—every course tile and coordinate ruler is engineered with adaptive frosted glass (backdrop-filter: blur(8px)) and a saturated 4px left color spine. Even over busy user-uploaded photography, Thai diacritics and monospace course codes remain crisp and scannable at a glance.\n\nThe system explicitly rejects generic SaaS dashboard bloat (nested KPI widgets, decorative charts, marketing hero banners, and uncalibrated neon palettes). Every pixel serves spatial orientation, conflict detection, and studio-grade PNG export.",
+    "keyCharacteristics": [
+      "Illuminated Vellum Canvas: Warm off-white drafting paper (#F6F4EF) paired with exposed 1px engineering hairlines (#D8D3C8) and tick marks along the time ruler.",
+      "Translucent Lucite Course Blocks: Frosted acrylic blocks (backdrop-filter: blur(8px)) with a 4px left color spine and top-right section pill (SEC 01) that stay legible over any custom background photo.",
+      "Tabular Precision: Course codes (344-211), section numbers, credit counters, and exam dates are always set in JetBrains Mono with font-variant-numeric: tabular-nums.",
+      "Tactile Physics & Ghost Slots: Dragging a course block lifts it with subtle tilt (scale(1.02) rotate(-0.8deg)) while illuminating dashed ghost drop zones for all valid official SIS sections of that subject."
+    ],
+    "rules": [
+      {
+        "name": "The Lucite Legibility Rule",
+        "body": "Course blocks on the timetable canvas must never use opaque flat fills that obscure the grid's drafting lines, nor raw transparent text that disappears over user photos; always pair an 84%–92% translucent tinted surface with backdrop-filter: blur(8px) and a solid 4px left accent spine.",
+        "section": "colors"
+      },
+      {
+        "name": "The Vermilion Quarantine Rule",
+        "body": "Clash Vermilion (#DC2626) is reserved exclusively for time overlaps, exam date collisions, and destructive removal actions—never as a decorative course color.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Coordinate Rule",
+        "body": "Every course code, section badge, time-axis label, credit counter, and exam date must use JetBrains Mono with font-variant-numeric: tabular-nums so columns align like an architectural title block.",
+        "section": "typography"
+      },
+      {
+        "name": "The Thai Diacritic Breathing Rule",
+        "body": "Course block titles and Thai labels must maintain a minimum line-height of 1.32 with overflow: hidden only on outer containers—never clipping upper tone marks (วรรณยุกต์) or lower vowels (สระอุ/อู).",
+        "section": "typography"
+      },
+      {
+        "name": "The Hairline Grid Authority Rule",
+        "body": "Never use drop shadows to separate timetable rows or columns; the calendar matrix relies exclusively on 1px solid full-bleed ruling lines and subtle alternating row tints.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do preserve 1px solid structural grid hairlines across both the time ruler and day rows so the calendar always reads like a precision drafting table.",
+      "Do use JetBrains Mono with font-variant-numeric: tabular-nums for all 6-digit PSU course codes, section numbers, credit totals, and exam dates.",
+      "Do ensure custom background images pass through the adjustable overlay tint (--custom-bg-opacity) and blur (--custom-bg-blur) layer so course blocks remain effortless to read.",
+      "Do surface both class-time overlaps and Mid/Final exam date collisions immediately with #DC2626 badges and diagonal hatching."
+    ],
+    "donts": [
+      "Don't introduce multi-page navigation, login walls, or decorative SaaS KPI cards above the workbench; the app opens directly into the functional studio.",
+      "Don't animate layout properties (width, height, top, left); use GPU-composited transform (scaleX, translateY, rotate) and opacity only.",
+      "Don't use opaque dark fills on course blocks that hide the underlying drafting grid or clash with user-uploaded photography.",
+      "Don't clip Thai upper tone marks or lower vowels inside compact schedule cells; maintain line-height >= 1.3 on Thai labels."
+    ]
+  }
+}

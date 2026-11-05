@@ -1,0 +1,13 @@
+{
+  "name": "moror-judtarangrien-scraper",
+  "version": "1.0.0",
+  "description": "PSU SIS (sis.psu.ac.th) Subject & Schedule Scraper using Playwright",
+  "type": "module",
+  "scripts": {
+    "scrape": "node scraper.mjs",
+    "test": "node scraper.mjs --keyword 895-001 --details"
+  },
+  "dependencies": {
+    "playwright": "^1.50.0"
+  }
+}
