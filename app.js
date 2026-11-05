@@ -737,6 +737,48 @@
     }
   }
 
+  let toastTimer = null;
+  function showToast(message, type = 'info') {
+    let toast = document.getElementById('appToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'appToast';
+      toast.className = 'app-toast';
+      document.body.appendChild(toast);
+    }
+
+    const warningIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>`;
+    const infoIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
+
+    toast.className = `app-toast toast-${type} is-visible`;
+    toast.innerHTML = `
+      <span class="toast-icon">${type === 'warning' ? warningIcon : infoIcon}</span>
+      <span class="toast-message">${escapeHtml(message)}</span>
+    `;
+
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove('is-visible');
+    }, 2400);
+  }
+
+  function triggerInvalidDropShake(block, course) {
+    if (!block) return;
+    block.classList.remove('is-invalid-drop-shake');
+    void block.offsetWidth; // Force reflow
+    block.classList.add('is-invalid-drop-shake');
+
+    if (navigator.vibrate) {
+      navigator.vibrate([35, 60, 35]);
+    }
+
+    showToast('วางได้เฉพาะในกรอบสีเขียวของ Section เท่านั้น', 'warning');
+
+    setTimeout(() => {
+      block.classList.remove('is-invalid-drop-shake');
+    }, 450);
+  }
+
   function setupPointerDrag(block, course, slotIdx, slot) {
     const subj = !course.isCustom && course.subjectId ? subjectById.get(course.subjectId) : null;
     const isSingleSection = course.isCustom || !subj || !subj.sections || subj.sections.length <= 1;
@@ -822,7 +864,7 @@
         }
 
         const trackEl = hitEl ? hitEl.closest('.grid-day-track') : null;
-        if (trackEl && !ghostEl) {
+        if (course.isCustom && trackEl && !ghostEl) {
           const trackRect = trackEl.getBoundingClientRect();
           const relX = moveEv.clientX - trackRect.left;
           const pct = Math.max(0, Math.min(1, relX / trackRect.width));
@@ -879,17 +921,22 @@
         }
 
         if (!handled) {
-          const trackEl = hitEl ? hitEl.closest('.grid-day-track') : null;
-          if (trackEl) {
-            const targetDay = parseInt(trackEl.dataset.day, 10);
-            const trackRect = trackEl.getBoundingClientRect();
-            const relX = upEv.clientX - trackRect.left;
-            const pct = Math.max(0, Math.min(1, relX / trackRect.width));
-            const targetStartMin = START_HOUR * 60 + Math.floor((pct * TOTAL_MINUTES) / 30) * 30;
+          if (course.isCustom) {
+            const trackEl = hitEl ? hitEl.closest('.grid-day-track') : null;
+            if (trackEl) {
+              const targetDay = parseInt(trackEl.dataset.day, 10);
+              const trackRect = trackEl.getBoundingClientRect();
+              const relX = upEv.clientX - trackRect.left;
+              const pct = Math.max(0, Math.min(1, relX / trackRect.width));
+              const targetStartMin = START_HOUR * 60 + Math.floor((pct * TOTAL_MINUTES) / 30) * 30;
 
-            handleGridCellDrop(targetDay, targetStartMin, course, slotIdx, slot.end - slot.start);
-            handled = true;
-            if (navigator.vibrate) navigator.vibrate(20);
+              handleGridCellDrop(targetDay, targetStartMin, course, slotIdx, slot.end - slot.start);
+              handled = true;
+              if (navigator.vibrate) navigator.vibrate(20);
+            }
+          } else {
+            // Revert back to original section and trigger shake animation + toast
+            triggerInvalidDropShake(block, course);
           }
         }
 
