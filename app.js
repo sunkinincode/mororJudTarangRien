@@ -749,10 +749,15 @@
 
     const warningIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>`;
     const infoIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
+    const successIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+
+    let icon = infoIcon;
+    if (type === 'warning') icon = warningIcon;
+    else if (type === 'success') icon = successIcon;
 
     toast.className = `app-toast toast-${type} is-visible`;
     toast.innerHTML = `
-      <span class="toast-icon">${type === 'warning' ? warningIcon : infoIcon}</span>
+      <span class="toast-icon">${icon}</span>
       <span class="toast-message">${escapeHtml(message)}</span>
     `;
 
@@ -835,6 +840,7 @@
             };
 
             block.style.opacity = '0.35';
+            block.style.pointerEvents = 'none';
 
             dragAvatar = document.createElement('div');
             dragAvatar.className = `drag-avatar color-${course.color || 'teal'}`;
@@ -854,15 +860,14 @@
         try { moveEv.preventDefault(); } catch (e) {}
         positionAvatar(moveEv.clientX, moveEv.clientY);
 
-        const hitEl = document.elementFromPoint(moveEv.clientX, moveEv.clientY);
-
-        const ghostEl = hitEl ? hitEl.closest('.ghost-section-block') : null;
+        const ghostEl = findGhostAtPoint(moveEv.clientX, moveEv.clientY);
         if (ghostEl !== currentHoveredGhost) {
           if (currentHoveredGhost) currentHoveredGhost.classList.remove('is-ghost-hovered');
           currentHoveredGhost = ghostEl;
           if (currentHoveredGhost) currentHoveredGhost.classList.add('is-ghost-hovered');
         }
 
+        const hitEl = document.elementFromPoint(moveEv.clientX, moveEv.clientY);
         const trackEl = hitEl ? hitEl.closest('.grid-day-track') : null;
         if (course.isCustom && trackEl && !ghostEl) {
           const trackRect = trackEl.getBoundingClientRect();
@@ -875,6 +880,29 @@
         } else {
           removeDropPreview();
         }
+      }
+
+      function findGhostAtPoint(x, y) {
+        // 1. Direct hit via elementFromPoint
+        const hit = document.elementFromPoint(x, y);
+        const directGhost = hit ? hit.closest('.ghost-section-block') : null;
+        if (directGhost) return directGhost;
+
+        // 2. Geometric hit-test against all rendered ghost blocks with generous hit padding (+8px)
+        const ghosts = elTimetableGrid.querySelectorAll('.ghost-section-block');
+        const pad = 8;
+        for (const g of ghosts) {
+          const rect = g.getBoundingClientRect();
+          if (
+            x >= rect.left - pad &&
+            x <= rect.right + pad &&
+            y >= rect.top - pad &&
+            y <= rect.bottom + pad
+          ) {
+            return g;
+          }
+        }
+        return null;
       }
 
       function onPointerUp(upEv) {
@@ -892,10 +920,9 @@
           return;
         }
 
-        const hitEl = document.elementFromPoint(upEv.clientX, upEv.clientY);
         let handled = false;
+        const ghostEl = findGhostAtPoint(upEv.clientX, upEv.clientY);
 
-        const ghostEl = hitEl ? hitEl.closest('.ghost-section-block') : null;
         if (ghostEl) {
           if (ghostEl.dataset.sec) {
             const targetSec = ghostEl.dataset.sec;
@@ -904,6 +931,7 @@
               addSisCourseToSchedule(subj, targetSec, course.color);
               handled = true;
               if (navigator.vibrate) navigator.vibrate(25);
+              showToast(`เปลี่ยนเป็น Sec ${targetSec} เรียบร้อย`, 'success');
             }
           } else if (ghostEl.dataset.secsJson) {
             try {
@@ -922,6 +950,7 @@
 
         if (!handled) {
           if (course.isCustom) {
+            const hitEl = document.elementFromPoint(upEv.clientX, upEv.clientY);
             const trackEl = hitEl ? hitEl.closest('.grid-day-track') : null;
             if (trackEl) {
               const targetDay = parseInt(trackEl.dataset.day, 10);
@@ -969,6 +998,7 @@
           currentHoveredGhost = null;
         }
         block.style.opacity = '';
+        block.style.pointerEvents = '';
         document.body.classList.remove('is-drag-active');
         state.dragContext = null;
         clearAlternateSectionGhosts();

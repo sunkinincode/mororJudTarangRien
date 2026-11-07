@@ -1674,7 +1674,7 @@ html, body {
   border: 1.5px dashed var(--accent-primary);
   background: rgba(20, 184, 166, 0.18);
   border-radius: 8px;
-  z-index: 8;
+  z-index: 15;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1686,16 +1686,18 @@ html, body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
   transition: all 0.12s ease;
 }
 
 .ghost-section-block.is-ghost-hovered {
-  background: rgba(15, 118, 110, 0.65) !important;
+  background: rgba(15, 118, 110, 0.75) !important;
   border: 2px solid var(--accent-primary) !important;
   color: #ffffff !important;
   box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);
   transform: scale(1.02);
+  z-index: 25 !important;
 }
 
 .ghost-section-block.is-grouped-ghost {
@@ -1709,6 +1711,9 @@ html, body {
   justify-content: space-between;
   padding: 0 8px;
   gap: 6px;
+  z-index: 15;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .ghost-section-block.is-grouped-ghost.is-ghost-hovered {
@@ -1716,6 +1721,7 @@ html, body {
   border-color: #0369a1 !important;
   color: #ffffff !important;
   box-shadow: 0 6px 18px rgba(2, 132, 199, 0.4);
+  z-index: 25 !important;
 }
 
 .ghost-group-label {
@@ -1907,6 +1913,19 @@ body.is-drag-active * {
   background: #0f172a;
   color: #f8fafc;
   border: 1.5px solid rgba(255, 255, 255, 0.18);
+}
+
+.app-toast.toast-success {
+  background: #064e3b;
+  color: #ecfdf5;
+  border: 1.5px solid #10b981;
+}
+
+.app-toast.toast-success .toast-icon {
+  color: #34d399;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 /* ==========================================================================
