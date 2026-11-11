@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>ม.อ. จัดตารางเรียน · PSU Timetable Studio</title>
   <meta name="description" content="เว็บจัดตารางเรียน ม.อ. สำหรับนักศึกษาทุกวิทยาเขต ค้นหาง่าย เช็คเวลาชนและวันสอบ ลากวางตารางเรียน ส่งออกรูปภาพสวยงามสไตล์ CodeSnap" />
   
@@ -124,8 +124,8 @@
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
             </div>
             <div class="export-option-info">
-              <span class="export-option-name">แนวตั้ง (Phone Wallpaper 9:16)</span>
-              <span class="export-option-desc">สัดส่วนจอมือถือ สำหรับตั้งเป็นภาพพักหน้าจอ Lock Screen</span>
+              <span class="export-option-name">แนวตั้ง (อ่านบนมือถือ)</span>
+              <span class="export-option-desc">เรียงคาบเรียนตามวันเป็นภาพเดียว ความยาวพอดีกับตาราง</span>
             </div>
           </button>
 
@@ -198,6 +198,22 @@
               <option value="">ทุกคณะ</option>
             </select>
           </div>
+        </div>
+
+        <!-- Location / Venue Filter: All vs Online/No Room vs Onsite -->
+        <div class="filter-mode-wrap" id="filterLocationMode" role="group" aria-label="กรองประเภทสถานที่เรียน">
+          <button type="button" class="btn-mode-pill is-active" data-mode="all">
+            <span>ทั้งหมด</span>
+          </button>
+          <button type="button" class="btn-mode-pill" data-mode="online-noroom" title="วิชาที่เรียนออนไลน์ หรือยังไม่มีการระบุสถานที่/ห้องเรียน">
+            <span class="mode-icon">🌐</span>
+            <span>ออนไลน์ / ไม่ระบุห้อง</span>
+            <span class="mode-count" id="badgeOnlineCount">843</span>
+          </button>
+          <button type="button" class="btn-mode-pill" data-mode="onsite" title="วิชาที่มีห้องเรียนปกติ">
+            <span class="mode-icon">📍</span>
+            <span>มีห้องเรียน</span>
+          </button>
         </div>
       </div>
 
@@ -342,6 +358,17 @@
         </div>
       </div>
 
+      <div id="mobileScheduleViewSwitch" class="schedule-view-switch" role="group" aria-label="รูปแบบการดูตารางเรียน">
+        <button type="button" class="schedule-view-btn is-active" data-schedule-view="daily" aria-pressed="true">รายวัน</button>
+        <button type="button" class="schedule-view-btn" data-schedule-view="weekly" aria-pressed="false">ทั้งสัปดาห์</button>
+      </div>
+      <div id="mobileClashNotice" class="mobile-clash-notice" role="status" aria-live="polite" hidden></div>
+
+      <div id="agendaView" class="agenda-view" aria-label="ตารางเรียนรายวัน">
+        <div id="agendaDayTabs" class="agenda-day-tabs" role="tablist" aria-label="เลือกวันเรียน"></div>
+        <div id="agendaDayContent" class="agenda-day-content" role="tabpanel"></div>
+      </div>
+
       <!-- EXPORTABLE TIMETABLE CANVAS (Fits 100% inside remaining viewport height) -->
       <div id="exportCanvasWrap" class="export-canvas-wrap theme-vellum pattern-dots cardstyle-pastel">
         <!-- Custom Photo Layer -->
@@ -386,6 +413,7 @@
             <div id="unscheduledCoursesList" class="unscheduled-courses-list"></div>
           </div>
         </div>
+        <div id="portraitExportSheet" class="portrait-export-sheet" aria-hidden="true"></div>
       </div>
 
       <!-- HIDDEN EXPORTABLE EXAM CANVAS (Off-screen container for high-res exam image generation) -->

@@ -146,6 +146,7 @@
     searchQuery: '',
     campusFilter: 'วิทยาเขตหาดใหญ่',
     facultyFilter: '',
+    locationFilter: 'all', // 'all' | 'online-noroom' | 'onsite'
     visibleLimit: 40,
     filteredSubjects: [],
     selectedCourses: [],
@@ -159,6 +160,8 @@
     scheduleTitle: 'ตารางเรียน 2/2569',
     dragContext: null,
     ignoreClashes: false,
+    activeAgendaDay: 0,
+    agendaDayTouched: false,
   };
 
   // DOM Elements
@@ -166,8 +169,14 @@
   const elBtnClearSearch = document.getElementById('btnClearSearch');
   const elFilterCampus = document.getElementById('filterCampus');
   const elFilterFaculty = document.getElementById('filterFaculty');
+  const elFilterLocationMode = document.getElementById('filterLocationMode');
+  const elBadgeOnlineCount = document.getElementById('badgeOnlineCount');
   const elCatalogList = document.getElementById('catalogList');
   const elTimetableGrid = document.getElementById('timetableGrid');
+  const elAgendaDayTabs = document.getElementById('agendaDayTabs');
+  const elAgendaDayContent = document.getElementById('agendaDayContent');
+  const elMobileClashNotice = document.getElementById('mobileClashNotice');
+  const elPortraitExportSheet = document.getElementById('portraitExportSheet');
   const elLedgerTableBody = document.getElementById('ledgerTableBody');
   const elClashAlertPill = document.getElementById('clashAlertPill');
   const elClashAlertText = document.getElementById('clashAlertText');
@@ -273,6 +282,7 @@
   function init() {
     initSafeCanvasPatterns();
     document.body.setAttribute('data-active-mobile-pane', 'board');
+    document.body.setAttribute('data-schedule-view', 'daily');
     populateFacultyDropdown();
     loadSavedState();
     if (state.selectedCourses.length === 0) {
@@ -448,16 +458,66 @@
   }
 
   // ==========================================================================
+  // Location / Classroom Venue Helpers
+  // ==========================================================================
+  function isSectionOnline(sec) {
+    if (!sec) return false;
+    const room = (sec.room || '').trim();
+    const group = (sec.group || '').trim();
+    return /ONLINE|LMS|ZOOM|MOOC|TEAMS|MEET/i.test(room) || /ออนไลน์|LMS/i.test(group);
+  }
+
+  function isSectionNoRoom(sec) {
+    if (!sec) return false;
+    if (isSectionOnline(sec)) return false;
+    const room = (sec.room || '').trim();
+    const slots = sec.slots || [];
+    if (!room || room === '-' || room === '–' || room === '---' || room.toLowerCase() === 'null') return true;
+    if (slots.length === 0 || slots.some((sl) => sl.day === null || sl.day === undefined)) return true;
+    return false;
+  }
+
+  function isSectionOnlineOrNoRoom(sec) {
+    return isSectionOnline(sec) || isSectionNoRoom(sec);
+  }
+
+  function isSubjectOnlineOrNoRoom(subj) {
+    return Boolean(subj && Array.isArray(subj.sections) && subj.sections.some(isSectionOnlineOrNoRoom));
+  }
+
+  function isSubjectOnsite(subj) {
+    return Boolean(subj && Array.isArray(subj.sections) && subj.sections.some((sec) => !isSectionOnlineOrNoRoom(sec)));
+  }
+
+  function updateOnlineFilterBadge() {
+    if (!elBadgeOnlineCount) return;
+    const campus = state.campusFilter;
+    const faculty = state.facultyFilter;
+    let count = 0;
+    for (const s of allSubjects) {
+      if (campus && s.campus !== campus) continue;
+      if (faculty && s.faculty !== faculty) continue;
+      if (isSubjectOnlineOrNoRoom(s)) count++;
+    }
+    elBadgeOnlineCount.textContent = count.toLocaleString();
+  }
+
+  // ==========================================================================
   // Clean Single-Line Catalog Search & Filtering
   // ==========================================================================
   function applyFilterAndRenderCatalog() {
     const q = state.searchQuery.trim().toLowerCase();
     const campus = state.campusFilter;
     const faculty = state.facultyFilter;
+    const locMode = state.locationFilter || 'all';
+
+    updateOnlineFilterBadge();
 
     state.filteredSubjects = allSubjects.filter((s) => {
       if (campus && s.campus !== campus) return false;
       if (faculty && s.faculty !== faculty) return false;
+      if (locMode === 'online-noroom' && !isSubjectOnlineOrNoRoom(s)) return false;
+      if (locMode === 'onsite' && !isSubjectOnsite(s)) return false;
       if (!q) return true;
       if (s.code.toLowerCase().includes(q)) return true;
       if (s.nameTh.toLowerCase().includes(q)) return true;
@@ -474,8 +534,8 @@
   function renderCatalogList() {
     elCatalogList.innerHTML = '';
 
-    // Show clean, icon-driven Empty Search State when no query or faculty is active yet
-    if (!state.searchQuery.trim() && !state.facultyFilter && !state.browseAll) {
+    // Show clean, icon-driven Empty Search State when no query or faculty or location filter is active yet
+    if (!state.searchQuery.trim() && !state.facultyFilter && !state.browseAll && state.locationFilter === 'all') {
       const emptyState = document.createElement('div');
       emptyState.className = 'catalog-empty-state';
       emptyState.innerHTML = `
@@ -483,8 +543,12 @@
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
         <div class="empty-search-title">เริ่มค้นหารายวิชา</div>
-        <div class="empty-search-sub">พิมพ์รหัสวิชา ชื่อวิชา หรือเลือกหมวดหมู่</div>
+        <div class="empty-search-sub">พิมพ์รหัสวิชา ชื่อวิชา หรือเลือกตัวกรอง</div>
         <div class="empty-quick-cats">
+          <button type="button" class="btn-quick-cat" data-quick-mode="online-noroom">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            <span>🌐 ออนไลน์ / ไม่ระบุห้อง</span>
+          </button>
           <button type="button" class="btn-quick-cat" data-quick-q="895-">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
             <span>895 ศึกษาทั่วไป</span>
@@ -539,11 +603,27 @@
       const card = document.createElement('article');
       card.className = `catalog-item${enrolledSec ? ' is-enrolled' : ''}`;
 
+      const hasOnlineSec = subj.sections.some(isSectionOnline);
+      const hasNoRoomSec = subj.sections.some(isSectionNoRoom);
+      let modeBadgeHtml = '';
+      if (hasOnlineSec) {
+        modeBadgeHtml = '<span class="cat-mode-badge is-online" title="เรียนออนไลน์ / LMS">🌐 Online</span>';
+      } else if (hasNoRoomSec) {
+        modeBadgeHtml = '<span class="cat-mode-badge is-noroom" title="ยังไม่ระบุห้องเรียน / ภาคปฏิบัติ–ฝึกงาน">– ไม่ระบุห้อง</span>';
+      }
+
       const secButtonsHtml = subj.sections
         .map((sec) => {
           const isSel = enrolledSec === sec.sec;
+          const isSecOnl = isSectionOnline(sec);
+          const isSecNoR = isSectionNoRoom(sec);
           const slotHint = sec.slots.length > 0 ? sec.dayTime : 'ไม่ระบุเวลา';
-          return `<button type="button" class="btn-sec-chip${isSel ? ' is-selected' : ''}" data-subj-id="${subj.id}" data-sec="${sec.sec}" title="Sec ${sec.sec}: ${slotHint}">${isSel ? '✓ ' : ''}Sec ${sec.sec}</button>`;
+          const secClasses = ['btn-sec-chip'];
+          if (isSel) secClasses.push('is-selected');
+          if (isSecOnl) secClasses.push('is-online-sec');
+          const chipIcon = isSel ? '✓ ' : isSecOnl ? '🌐 ' : '';
+          const chipTitle = `Sec ${sec.sec}: ${isSecOnl ? '[Online] ' : isSecNoR ? '[ไม่ระบุห้อง] ' : ''}${slotHint}`;
+          return `<button type="button" class="${secClasses.join(' ')}" data-subj-id="${subj.id}" data-sec="${sec.sec}" title="${escapeHtml(chipTitle)}">${chipIcon}Sec ${sec.sec}</button>`;
         })
         .join('');
 
@@ -570,6 +650,7 @@
       card.innerHTML = `
         <div class="cat-header-line">
           <span class="cat-code">${escapeHtml(subj.code)}</span>
+          ${modeBadgeHtml}
           <span class="${isPrimaryEn ? 'cat-name-en' : 'cat-name-th'}" title="${escapeHtml(primaryTitle)}">${escapeHtml(primaryTitle)}</span>
           <button type="button" class="btn-inspect-detail" data-inspect-id="${subj.id}" title="ดูรายละเอียดวิชาและทุกตอนเรียน">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
@@ -681,10 +762,97 @@
   // ==========================================================================
   // Timetable Grid & Header Rendering
   // ==========================================================================
+  function getActiveScheduleDays() {
+    const scheduledDays = new Set();
+    state.selectedCourses.forEach((course) => (course.slots || []).forEach((slot) => {
+      if (Number.isInteger(slot.day) && slot.day >= 0 && slot.day <= 6) scheduledDays.add(slot.day);
+    }));
+    return DAYS.filter((day) => day.index <= 4 || scheduledDays.has(day.index));
+  }
+
+  function getDayEntries(dayIndex) {
+    return state.selectedCourses.flatMap((course) => (course.slots || [])
+      .map((slot, slotIdx) => ({ course, slot, slotIdx }))
+      .filter(({ slot }) => slot.day === dayIndex && Number.isFinite(slot.start) && Number.isFinite(slot.end)))
+      .sort((a, b) => a.slot.start - b.slot.start || a.course.code.localeCompare(b.course.code));
+  }
+
+  function getUnscheduledCourses() {
+    return state.selectedCourses.filter((course) => !course.slots?.some((slot) =>
+      Number.isInteger(slot.day) && slot.day >= 0 && slot.day <= 6));
+  }
+
+  function openCourseDetail(course) {
+    if (course.isCustom) return openCustomModalForDetail(course);
+    const subject = subjectById.get(course.subjectId);
+    if (subject) openSubjectDetailModal(subject, course.sec);
+  }
+
+  function readableCourseHtml(course, slot, clashInfo, isExport = false) {
+    const hasClassClash = clashInfo.clashingCourseUids.has(course.uid) && !state.ignoreClashes;
+    const room = String(slot?.room || course.room || '')
+      .split(',').map((part) => part.trim()).filter((part) => part && part !== '-' && part !== '–')
+      .join(', ') || 'ไม่ระบุห้อง';
+    const time = slot ? `${minToTimeStr(slot.start)}–${minToTimeStr(slot.end)}` : 'ไม่ระบุเวลาเรียน';
+    const nameTh = course.nameTh || course.nameEn || course.code;
+    const nameEn = course.nameEn && course.nameEn !== nameTh ? course.nameEn : '';
+    const tag = isExport ? 'div' : 'button';
+    const attrs = isExport ? '' : ` type="button" data-course-uid="${escapeHtml(course.uid)}" aria-label="ดูรายละเอียด ${escapeHtml(course.code)} ${escapeHtml(nameTh)} ${escapeHtml(time)}"`;
+    return `<${tag}${attrs} class="readable-course ${isExport ? 'portrait-course' : 'agenda-card'} color-${escapeHtml(course.color || 'teal')}${hasClassClash ? ' is-clashing' : ''}${course.isCustom ? ' is-custom-course' : ''}">
+      <span class="readable-course-time">${escapeHtml(time)}</span>
+      <span class="readable-course-main">
+        <span class="readable-course-code">${escapeHtml(course.code)}</span>
+        <span class="readable-course-title">${escapeHtml(nameTh)}</span>
+        ${nameEn ? `<span class="readable-course-en">${escapeHtml(formatCourseTitle(nameEn, Infinity))}</span>` : ''}
+        <span class="readable-course-meta">Sec ${escapeHtml(course.sec || '-')} <span aria-hidden="true">·</span> ${escapeHtml(room)}</span>
+        ${hasClassClash ? '<span class="readable-course-clash">เวลาเรียนชนกัน</span>' : ''}
+      </span>
+    </${tag}>`;
+  }
+
+  function renderAgenda(clashInfo) {
+    if (!elAgendaDayTabs || !elAgendaDayContent) return;
+    const days = getActiveScheduleDays();
+    if (!state.agendaDayTouched) {
+      const firstWithClass = days.find((day) => getDayEntries(day.index).length > 0);
+      if (firstWithClass) state.activeAgendaDay = firstWithClass.index;
+    }
+    if (!days.some((day) => day.index === state.activeAgendaDay)) state.activeAgendaDay = days[0].index;
+    elAgendaDayTabs.innerHTML = days.map((day) => {
+      const selected = day.index === state.activeAgendaDay;
+      return `<button type="button" id="agenda-tab-${day.index}" role="tab" aria-controls="agendaDayContent" class="agenda-day-tab${selected ? ' is-active' : ''}" data-agenda-day="${day.index}" aria-selected="${selected}" tabindex="${selected ? '0' : '-1'}">${day.th}<span class="agenda-day-count">${getDayEntries(day.index).length}</span></button>`;
+    }).join('');
+
+    const day = DAYS[state.activeAgendaDay];
+    const entries = getDayEntries(day.index);
+    const unscheduled = getUnscheduledCourses();
+    elAgendaDayContent.setAttribute('aria-label', `รายวิชาวัน${day.th}`);
+    elAgendaDayContent.setAttribute('aria-labelledby', `agenda-tab-${day.index}`);
+    elAgendaDayContent.innerHTML = `<div class="agenda-heading"><h3>วัน${day.th}</h3><span>${entries.length} คาบเรียน</span></div>
+      ${entries.length ? `<div class="agenda-course-list">${entries.map(({course, slot}) => readableCourseHtml(course, slot, clashInfo)).join('')}</div>` : '<p class="agenda-empty">ไม่มีคาบเรียนในวันนี้</p>'}
+      ${unscheduled.length ? `<div class="agenda-unscheduled"><h3>วิชาไม่ระบุเวลาเรียน</h3><div class="agenda-course-list">${unscheduled.map((course) => readableCourseHtml(course, null, clashInfo)).join('')}</div></div>` : ''}`;
+  }
+
+  function renderPortraitExport(clashInfo) {
+    if (!elPortraitExportSheet) return;
+    const days = getActiveScheduleDays().filter((day) => getDayEntries(day.index).length > 0);
+    const unscheduled = getUnscheduledCourses();
+    elPortraitExportSheet.innerHTML = `<header class="portrait-export-header">
+      <span class="portrait-export-brand">ม.อ.จัดตารางเรียน</span>
+      <h2>${escapeHtml(state.scheduleTitle || 'ตารางเรียน')}</h2>
+      <p>${state.selectedCourses.length} วิชา · อ่านง่ายบนมือถือ</p>
+    </header>
+    ${days.map((day) => `<section class="portrait-day-section"><h3>วัน${day.th}</h3><div class="portrait-course-list">${getDayEntries(day.index).map(({course, slot}) => readableCourseHtml(course, slot, clashInfo, true)).join('')}</div></section>`).join('')}
+    ${unscheduled.length ? `<section class="portrait-day-section"><h3>วิชาไม่ระบุเวลาเรียน</h3><div class="portrait-course-list">${unscheduled.map((course) => readableCourseHtml(course, null, clashInfo, true)).join('')}</div></section>` : ''}
+    ${days.length || unscheduled.length ? '' : '<p class="portrait-empty">ยังไม่มีรายวิชาในตาราง</p>'}`;
+  }
+
   function renderAllScheduleViews() {
     const clashInfo = computeClashes();
     updateTopBar(clashInfo);
     renderTimetableGrid(clashInfo);
+    renderAgenda(clashInfo);
+    renderPortraitExport(clashInfo);
     renderLedgerTable(clashInfo);
   }
 
@@ -695,6 +863,12 @@
     elSheetCourseBadge.textContent = `${totalCourses} วิชา`;
 
     const hasClashes = clashInfo.classClashMessages.length > 0 || clashInfo.examClashMessages.length > 0;
+    if (elMobileClashNotice) {
+      elMobileClashNotice.hidden = !hasClashes;
+      elMobileClashNotice.textContent = hasClashes
+        ? [...clashInfo.classClashMessages, ...clashInfo.examClashMessages].join(' · ')
+        : '';
+    }
     if (hasClashes) {
       elClashAlertPill.hidden = false;
       const primaryMsg = clashInfo.classClashMessages[0] || clashInfo.examClashMessages[0];
@@ -1069,22 +1243,7 @@
   function renderTimetableGrid(clashInfo) {
     elTimetableGrid.innerHTML = '';
 
-    // Check if any selected course slot falls on Saturday (5) or Sunday (6)
-    const scheduledCourses = state.selectedCourses.filter((c) => (c.slots || []).length > 0);
-    const hasSaturday = scheduledCourses.some((c) =>
-      c.slots.some((s) => s.day === 5)
-    );
-    const hasSunday = scheduledCourses.some((c) =>
-      c.slots.some((s) => s.day === 6)
-    );
-
-    // Dynamic 5-day Mon-Fri by default; auto-expand to Sat/Sun if enrolled
-    const activeDays = DAYS.filter((d) => {
-      if (d.index <= 4) return true; // จันทร์ - ศุกร์ (0 - 4)
-      if (d.index === 5 && hasSaturday) return true; // เสาร์ (5)
-      if (d.index === 6 && hasSunday) return true; // อาทิตย์ (6)
-      return false;
-    });
+    const activeDays = getActiveScheduleDays();
 
     // Update CSS grid rows count dynamically
     elTimetableGrid.style.gridTemplateRows = `32px repeat(${activeDays.length}, minmax(0, 1fr))`;
@@ -1098,7 +1257,7 @@
 
     const corner = document.createElement('div');
     corner.className = 'grid-corner-cell';
-    corner.innerHTML = '<span class="corner-full">DAY</span><span class="corner-short">วัน</span>';
+    corner.innerHTML = '<span class="corner-full">วัน</span><span class="corner-short">วัน</span>';
     headerRow.appendChild(corner);
 
     for (let h = START_HOUR; h < END_HOUR; h++) {
@@ -1199,13 +1358,13 @@
 
         block.dataset.uid = course.uid;
         block.dataset.slotIdx = String(slotIdx);
+        block.tabIndex = 0;
+        block.setAttribute('role', 'button');
+        block.setAttribute('aria-label', `${course.code} ${course.nameTh || course.nameEn} ${minToTimeStr(slot.start)} ถึง ${minToTimeStr(slot.end)} ห้อง ${course.room || 'ไม่ระบุ'} Sec ${course.sec} ดูรายละเอียด`);
         block.title = `${course.code} ${course.nameTh} (Sec ${course.sec})\n${minToTimeStr(slot.start)}–${minToTimeStr(slot.end)} · ห้อง ${course.room || '-'}${isSingleSection ? '\n🔒 วิชานี้มี Section เดียว' : ''}`;
 
         const roomText = (course.room || '').replace(/^[,\s-]+|[,\s-]+$/g, '');
-        const engName = (course.nameEn || '').trim();
-        const displayName = engName || course.nameTh || '';
-        const nameLen = displayName.length;
-        const lengthClass = nameLen > 38 ? 'is-long-title' : (nameLen > 22 ? 'is-mid-title' : '');
+        const displayName = course.nameTh || course.nameEn || '';
 
         const lockIconHtml = isSingleSection
           ? `<svg class="lock-mini" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`
@@ -1248,7 +1407,7 @@
         block.innerHTML = `
           <button type="button" class="block-remove-btn" title="ลบวิชา" aria-label="ลบวิชา">×</button>
           ${topHtml}
-          <div class="block-title ${isNarrow ? 'is-narrow' : ''} ${lengthClass}" title="${escapeHtml(course.code + ' ' + (course.nameEn || '') + ' (' + course.nameTh + ')') }">
+          <div class="block-title" title="${escapeHtml(course.code + ' ' + course.nameTh + (course.nameEn ? ' · ' + course.nameEn : ''))}">
             ${escapeHtml(formattedTitle)}
           </div>
           ${bottomHtml}
@@ -1257,6 +1416,12 @@
         block.querySelector('.block-remove-btn').addEventListener('click', (ev) => {
           ev.stopPropagation();
           removeCourseFromSchedule(course.uid);
+        });
+        block.addEventListener('keydown', (ev) => {
+          if (ev.target === block && (ev.key === 'Enter' || ev.key === ' ')) {
+            ev.preventDefault();
+            openCourseDetail(course);
+          }
         });
 
         // Setup unified pointer drag engine
@@ -1276,10 +1441,7 @@
   function renderUnscheduledCoursesShelf() {
     if (!elUnscheduledCoursesShelf || !elUnscheduledCoursesList) return;
 
-    const unscheduledCourses = state.selectedCourses.filter((course) => {
-      if (!course.slots || course.slots.length === 0) return true;
-      return course.slots.every((s) => s.day === null || s.day === undefined || s.day < 0 || s.day > 6);
-    });
+    const unscheduledCourses = getUnscheduledCourses();
 
     if (unscheduledCourses.length === 0) {
       elUnscheduledCoursesShelf.hidden = true;
@@ -1296,8 +1458,8 @@
       const roomText = (course.room || '').replace(/^[,\s-]+|[,\s-]+$/g, '');
       const engName = (course.nameEn || '').trim();
       const thaiName = (course.nameTh || '').trim();
-      const primaryName = engName || thaiName || course.code;
-      const subName = engName && thaiName && engName !== thaiName ? thaiName : '';
+      const primaryName = thaiName || engName || course.code;
+      const subName = engName && thaiName && engName !== thaiName ? engName : '';
       const platformText = roomText && roomText !== '–' && roomText !== '-' ? roomText : 'เรียนออนไลน์ / ศึกษาด้วยตนเอง (E-Learning)';
 
       return `
@@ -1793,6 +1955,18 @@
         const isFocused = activeSec === sec.sec;
         const clashes = computeSectionClashes(subj, sec);
 
+        // Room tag: Online vs Physical Room vs No room assigned
+        const isSecOnl = isSectionOnline(sec);
+        const isSecNoR = isSectionNoRoom(sec);
+        let roomBadgeHtml = '';
+        if (isSecOnl) {
+          roomBadgeHtml = `<span class="sec-room-tag is-online">🌐 ${escapeHtml(sec.room || 'ONLINE')}</span>`;
+        } else if (sec.room && sec.room !== '-' && sec.room !== '–' && sec.room !== '---') {
+          roomBadgeHtml = `<span class="sec-room-tag">ห้อง ${escapeHtml(sec.room)}</span>`;
+        } else {
+          roomBadgeHtml = `<span class="sec-room-tag is-noroom">📍 ไม่ระบุห้องเรียน</span>`;
+        }
+
         // Schedule Slots (Left column)
         let slotsHtml = '';
         if (sec.slots && sec.slots.length > 0) {
@@ -1804,7 +1978,7 @@
                   <span>วัน${DAYS[sl.day]?.th || sl.dayName}</span>
                 </span>
                 <span class="sec-time-tag">${minToTimeStr(sl.start)}–${minToTimeStr(sl.end)} น.</span>
-                ${sec.room && sec.room !== '-' ? `<span class="sec-room-tag">ห้อง ${escapeHtml(sec.room)}</span>` : ''}
+                ${roomBadgeHtml}
               </div>
             `)
             .join('');
@@ -1812,7 +1986,7 @@
           slotsHtml = `
             <div class="sec-slot-line">
               <span class="sec-time-tag">${escapeHtml(sec.dayTime || 'ไม่ระบุวันเวลา')}</span>
-              ${sec.room && sec.room !== '-' ? `<span class="sec-room-tag">ห้อง ${escapeHtml(sec.room)}</span>` : ''}
+              ${roomBadgeHtml}
             </div>
           `;
         }
@@ -2158,8 +2332,8 @@
                   <span>${escapeHtml(ex.dateText)}</span>
                 </span>
               </div>
-              <div class="exam-item-name">${escapeHtml(ex.course.nameEn || ex.course.nameTh)}</div>
-              ${ex.course.nameEn ? `<div class="exam-item-name-sub">${escapeHtml(ex.course.nameTh)}</div>` : ''}
+              <div class="exam-item-name">${escapeHtml(ex.course.nameTh || ex.course.nameEn)}</div>
+              ${ex.course.nameEn && ex.course.nameTh ? `<div class="exam-item-name-sub">${escapeHtml(ex.course.nameEn)}</div>` : ''}
               <div class="exam-item-footer">
                 <span>ผู้สอน: ${escapeHtml((ex.course.instructors || []).join(', ') || '-')}</span>
                 <span>ห้อง: ${escapeHtml(ex.course.room || '-')}</span>
@@ -2184,8 +2358,8 @@
                   <span>${escapeHtml(ex.dateText)}</span>
                 </span>
               </div>
-              <div class="exam-item-name">${escapeHtml(ex.course.nameEn || ex.course.nameTh)}</div>
-              ${ex.course.nameEn ? `<div class="exam-item-name-sub">${escapeHtml(ex.course.nameTh)}</div>` : ''}
+              <div class="exam-item-name">${escapeHtml(ex.course.nameTh || ex.course.nameEn)}</div>
+              ${ex.course.nameEn && ex.course.nameTh ? `<div class="exam-item-name-sub">${escapeHtml(ex.course.nameEn)}</div>` : ''}
               <div class="exam-item-footer">
                 <span>ผู้สอน: ${escapeHtml((ex.course.instructors || []).join(', ') || '-')}</span>
                 <span>ห้อง: ${escapeHtml(ex.course.room || '-')}</span>
@@ -2195,8 +2369,8 @@
         }
       }
 
-      // Allow DOM update
-      await new Promise((r) => setTimeout(r, 150));
+      await document.fonts.ready;
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
       const blob = await captureElementToBlob(elExamWrap, {
         scale: 2,
@@ -2343,22 +2517,24 @@
       elExportCanvasWrap.classList.add('is-exporting-landscape');
     }
 
-    const exportW = format === 'portrait' ? 1080 : 1600;
-    const exportH = format === 'portrait' ? 1920 : 1000;
-
     try {
-      // Allow browser to apply layout classes
-      await new Promise((r) => setTimeout(r, 150));
+      await document.fonts.ready;
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const exportW = format === 'portrait' ? 720 : 1600;
+      const exportH = format === 'portrait'
+        ? Math.ceil(elExportCanvasWrap.getBoundingClientRect().height)
+        : 1000;
+      if (exportH <= 0) throw new Error('ไม่พบเนื้อหาตารางสำหรับบันทึกรูป');
 
       const blob = await captureElementToBlob(elExportCanvasWrap, {
-        scale: 2,
+        scale: format === 'portrait' ? 1.5 : 2,
         useCORS: true,
         allowTaint: false,
         backgroundColor: null,
         logging: false,
         width: exportW,
         height: exportH,
-        windowWidth: exportW,
+        windowWidth: format === 'portrait' ? 1100 : exportW,
         windowHeight: exportH,
         scrollX: 0,
         scrollY: 0,
@@ -2382,7 +2558,9 @@
       const elExportResultImg = document.getElementById('exportResultImg');
       const elBtnDirectDownload = document.getElementById('btnDirectDownloadImage');
       const elBtnShare = document.getElementById('btnShareExportImage');
+      const elExportResultTitle = document.getElementById('exportResultTitle');
 
+      if (elExportResultTitle) elExportResultTitle.textContent = 'รูปตารางเรียนของคุณพร้อมแล้ว';
       if (elExportResultImg) {
         elExportResultImg.src = activeExportBlobUrl;
       }
@@ -2426,6 +2604,42 @@
   // Event Listeners
   // ==========================================================================
   function bindEvents() {
+    document.querySelectorAll('.schedule-view-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        const view = button.dataset.scheduleView;
+        document.body.dataset.scheduleView = view;
+        document.querySelectorAll('.schedule-view-btn').forEach((option) => {
+          const selected = option === button;
+          option.classList.toggle('is-active', selected);
+          option.setAttribute('aria-pressed', String(selected));
+        });
+      });
+    });
+
+    elAgendaDayTabs?.addEventListener('click', (event) => {
+      const tab = event.target.closest('[data-agenda-day]');
+      if (!tab) return;
+      state.activeAgendaDay = Number(tab.dataset.agendaDay);
+      state.agendaDayTouched = true;
+      renderAgenda(computeClashes());
+      elAgendaDayTabs.querySelector(`[data-agenda-day="${state.activeAgendaDay}"]`)?.focus();
+    });
+    elAgendaDayTabs?.addEventListener('keydown', (event) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      const tabs = [...elAgendaDayTabs.querySelectorAll('[data-agenda-day]')];
+      const index = tabs.indexOf(document.activeElement);
+      if (index < 0) return;
+      event.preventDefault();
+      const nextIndex = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 :
+        (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      tabs[nextIndex].click();
+    });
+    elAgendaDayContent?.addEventListener('click', (event) => {
+      const card = event.target.closest('[data-course-uid]');
+      const course = card && state.selectedCourses.find((item) => item.uid === card.dataset.courseUid);
+      if (course) openCourseDetail(course);
+    });
+
     elSearchInput.addEventListener('input', (e) => {
       state.searchQuery = e.target.value;
       if (!state.searchQuery) state.browseAll = false;
@@ -2453,10 +2667,33 @@
       applyFilterAndRenderCatalog();
     });
 
+    if (elFilterLocationMode) {
+      elFilterLocationMode.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-mode-pill');
+        if (!btn || !btn.dataset.mode) return;
+        const mode = btn.dataset.mode;
+        if (state.locationFilter === mode) return;
+        state.locationFilter = mode;
+        elFilterLocationMode.querySelectorAll('.btn-mode-pill').forEach((b) => {
+          b.classList.toggle('is-active', b === btn);
+        });
+        applyFilterAndRenderCatalog();
+      });
+    }
+
     elCatalogList.addEventListener('click', (e) => {
       const quickCatBtn = e.target.closest('.btn-quick-cat');
       if (quickCatBtn) {
-        if (quickCatBtn.dataset.browseAll) {
+        if (quickCatBtn.dataset.quickMode) {
+          const mode = quickCatBtn.dataset.quickMode;
+          state.locationFilter = mode;
+          if (elFilterLocationMode) {
+            elFilterLocationMode.querySelectorAll('.btn-mode-pill').forEach((b) => {
+              b.classList.toggle('is-active', b.dataset.mode === mode);
+            });
+          }
+          applyFilterAndRenderCatalog();
+        } else if (quickCatBtn.dataset.browseAll) {
           state.browseAll = true;
           applyFilterAndRenderCatalog();
         } else if (quickCatBtn.dataset.quickQ) {
@@ -2610,6 +2847,7 @@
     document.getElementById('scheduleTitleInput').addEventListener('input', (e) => {
       state.scheduleTitle = e.target.value || 'ตารางเรียน 2/2569';
       elSheetTitleDisplay.textContent = state.scheduleTitle;
+      renderPortraitExport(computeClashes());
       saveState();
     });
 

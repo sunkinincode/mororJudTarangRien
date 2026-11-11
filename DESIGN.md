@@ -1,6 +1,6 @@
 ---
 name: มอ.จัดตารางเรียน (PSU Timetable Studio)
-description: Clean, single-viewport light-table timetable studio with decorative patterns, pastel/glass cards, and unclipped single-line Thai typography.
+description: Clean light-table timetable studio with readable Thai-first course blocks, a daily view on compact screens, and content-sized portrait exports.
 colors:
   bg-page: "#faf8f5"
   bg-surface: "#ffffff"
@@ -88,12 +88,13 @@ components:
 
 มอ.จัดตารางเรียน is designed as an airy, distraction-free single-viewport studio (`100vh` locked layout with zero vertical page scrolling). The top navigation bar, left course catalog drawer, decoration bar, and 7-day timetable canvas share a cohesive warm ivory surface (`#faf8f5` and `#ffffff`) so the interface feels calm, light, and effortless to scan.
 
-Every text element—from PSU course codes (`322-102`) to Thai course titles (`ปรัชญาของเศรษฐกิจพอเพียง...`)—is strictly constrained to a single line (`white-space: nowrap; text-overflow: ellipsis;`) with calibrated vertical line-height (`1.55–1.6`) in `IBM Plex Sans Thai`, guaranteeing that upper Thai tone marks (`วรรณยุกต์`) and lower vowels (`สระอุ/อู`) are never clipped or floating.
+Course codes and Thai titles lead each scheduled block. Titles may wrap to two lines with enough line height for Thai vowels and tone marks; full details remain available on click or keyboard activation. Compact screens default to readable cards grouped by day and offer a horizontally scrollable weekly grid.
 
 **Key Characteristics:**
 - **100vh Single-Viewport Workbench**: All 7 days (`จันทร์`–`อาทิตย์`) scale dynamically via CSS Grid (`grid-template-rows: 32px repeat(7, minmax(0, 1fr))`) so the entire weekly schedule fits on one screen without scrolling.
 - **Light Cohesive Topbar**: Translucent warm ivory header (`rgba(250, 248, 245, 0.92)`) that blends seamlessly with the light workspace.
-- **Single-Line Unclipped Thai Typography**: Strict single-line truncation paired with `line-height: 1.55–1.6` and vertical breathing room so Thai vowels and tone marks render crisply.
+- **Thai-First Course Typography**: Readable code and two-line title in the grid; full Thai title, time, room, and section in daily cards and portrait exports.
+- **Content-Sized Mobile Export**: One portrait PNG grows with the number of scheduled classes instead of shrinking a full hourly grid into a fixed 9:16 frame.
 - **Rich Timetable Decoration Studio**: 6 curated themes (`ครีม`, `ซากุระ`, `ศรีตรัง`, `มัทฉะ`, `ฟ้าใส`, `ดาร์ก`), custom color wheel picker, 7 background motifs (`จุด`, `กราฟ`, `คลื่น`, `ดอกไม้`, `ดาว`, `ทแยง`, `เรียบ`), 3 card styles (`พาสเทล`, `กระจกใส`, `มินิมอล`), and custom photo upload.
 
 ## Colors
@@ -125,18 +126,18 @@ Every text element—from PSU course codes (`322-102`) to Thai course titles (`�
 ### Hierarchy
 - **Display** (`700`, `1.05rem`, line-height `1.55`): Timetable sheet header title.
 - **Headline** (`700`, `1rem`, line-height `1.55`): Topbar brand title and modal headings.
-- **Title** (`600`, `0.84rem`, line-height `1.6`): Single-line Thai course names in catalog cards and timetable blocks.
+- **Title** (`650–700`, `0.98rem` in timetable blocks, line-height `1.45`): Thai course names may use two lines; daily cards use larger text.
 - **Body** (`500`, `0.8rem`, line-height `1.55`): Controls, filter selects, and modal tables.
 - **Label** (`600`, `0.72rem`, line-height `1.45`, `tabular-nums`): Course codes (`895-001`), section pills (`S.01`), and time ruler hours (`08:00`–`20:00`).
 
 ### Named Rules
-**The Single-Line Thai Clearance Rule.** Every course code, course title, and UI label must stay on a single line (`white-space: nowrap; overflow: hidden; text-overflow: ellipsis;`) with `line-height >= 1.55` and `padding-block >= 1px` so Thai tone marks (`วรรณยุกต์`) and lower vowels (`สระอุ/อู`) are never clipped.
+**The Thai Clearance Rule.** Thai course titles use at least `1.4` line height and enough vertical space for tone marks and lower vowels. Never shrink text according to name length; truncate narrow grid blocks after two lines and provide full details in the daily view or detail modal.
 
 ## Layout
 
 - **Topbar (`52px` fixed height)**: Brand mark, editable schedule title, conditional clash pill, Exam modal trigger, Custom Subject button, and PNG export group.
 - **Left Catalog Drawer (`300px` width on desktop)**: Search input, 2-column Campus & Faculty select row, and scrollable single-line course cards.
-- **Right Timetable Stage (`1fr` width, `calc(100vh - 52px)` height)**: Compact single-line Decoration Bar (`36px` height) above the full-height exportable 7-day timetable canvas.
+- **Right Timetable Stage (`1fr` width, `calc(100vh - 52px)` height)**: Compact decoration controls above the weekly timetable. At widths up to 1024px, the board defaults to a daily schedule with a weekly-view switch.
 
 ## Elevation & Depth
 
@@ -154,13 +155,13 @@ Surfaces rely on hairline borders (`1px solid rgba(15, 23, 42, 0.08)`) and subtl
 - **Decoration Pills (`24px` height, `6px` radius)**: Compact single-line pills for switching themes, patterns, and card styles without clutter.
 
 ### Course Blocks (`.course-block`)
-- **2-Line Single-Row Structure**: Top line displays `Code` + `S.01` + `Room` on a single nowrap flex line; bottom line displays the Thai course title on a single nowrap ellipsis line with `line-height: 1.6`.
+- **Readable Structure**: Code first, Thai title up to two lines, then section and room. The detail modal supplies the full name, time, and section for narrow blocks.
 
 ## Do's and Don'ts
 
 ### Do:
 - **Do** keep the entire desktop workspace locked to `100vh` (`overflow: hidden`) so the user never has to scroll the page.
-- **Do** keep all course titles, codes, and UI controls on a single line with `line-height >= 1.55` to protect Thai diacritics.
+- **Do** give Thai names enough line height, preserve legible font sizes, and allow course details to wrap in daily cards and portrait PNGs.
 
 ### Don't:
 - **Don't** add cumulative credit bars, verbose status banners, or multi-line metadata subtitles to the main viewport.
