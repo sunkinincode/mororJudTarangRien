@@ -16,7 +16,7 @@ Prince of Songkla University (PSU) students across all 5 campuses (Hat Yai, Patt
 
 ## Product Purpose
 
-Moror-JudTarangRien (มอ.จัดตารางเรียน) enables PSU students to search all 4,039 real offered subjects (6,276 sections) from `sis.psu.ac.th`, inspect section details (instructors, class times, rooms, student groups, seat counts, midterm and final exam dates), assemble a conflict-checked weekly timetable, add custom subjects manually, drag-and-drop courses on the timetable grid (switching valid SIS sections or freely moving custom/personal blocks), customize the calendar background (curated themes + custom image upload with opacity/blur controls), and export high-resolution timetable images in desktop landscape or a content-sized mobile portrait format with optional exam schedule summaries.
+Moror-JudTarangRien (มอ.จัดตารางเรียน) enables PSU students to search all 4,039 real offered subjects (6,276 sections) from `sis.psu.ac.th`, inspect section details (instructors, class times, rooms, student groups, seat counts, midterm and final exam dates), assemble a conflict-checked weekly timetable, add custom subjects manually, drag-and-drop courses on the timetable grid (switching valid SIS sections or freely moving custom/personal blocks), customize the calendar background (curated themes + custom image upload with opacity/blur controls), and export high-resolution timetable images in desktop landscape or mobile/IG Story portrait formats with optional exam schedule summaries.
 
 ## Positioning
 
@@ -36,7 +36,7 @@ Used primarily during pre-registration and add/drop periods on laptops, tablets,
 - Customizable calendar appearance & background:
   - Curated theme presets plus custom background image upload with adjustable dim/opacity and blur sliders so schedule blocks remain legible over any photo.
 - High-DPI Image Export (PNG):
-- Export presets for Desktop/Tablet Landscape and a readable, content-sized Mobile Portrait image, plus a separate exam schedule image.
+  - Export presets for Desktop/Tablet Landscape and Mobile/IG Story Portrait, with toggleable Exam Schedule & Subject Summary table underneath.
 - Fully responsive layout across desktop, tablet, and mobile viewports.
 
 ## Evidence on Hand
