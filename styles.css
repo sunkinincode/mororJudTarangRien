@@ -801,8 +801,15 @@ html, body {
 }
 
 .btn-mode-pill .mode-icon {
-  font-size: 0.78rem;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.btn-mode-pill .mode-icon svg {
+  display: block;
 }
 
 .btn-mode-pill .mode-count {
@@ -858,6 +865,13 @@ html, body {
   border-color: #0d9488;
 }
 
+.btn-sec-chip .chip-icon-svg {
+  display: inline-block;
+  vertical-align: -1px;
+  margin-right: 3px;
+  flex-shrink: 0;
+}
+
 .btn-sec-chip.is-online-sec.is-selected {
   background: var(--accent-primary);
   color: #ffffff;
@@ -872,6 +886,14 @@ html, body {
 .sec-room-tag.is-noroom {
   color: #64748b;
   background: #f1f5f9;
+}
+
+.cat-mode-badge svg,
+.sec-room-tag svg,
+.quick-sec-pill svg {
+  display: inline-block;
+  vertical-align: -1px;
+  flex-shrink: 0;
 }
 
 /* Empty Search State ("เริ่มค้นหารายวิชา") */

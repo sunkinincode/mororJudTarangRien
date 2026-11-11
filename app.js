@@ -540,7 +540,7 @@
         <div class="empty-quick-cats">
           <button type="button" class="btn-quick-cat" data-quick-mode="online-noroom">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-            <span>🌐 ออนไลน์ / ไม่ระบุห้อง</span>
+            <span>ออนไลน์ / ไม่ระบุห้อง</span>
           </button>
           <button type="button" class="btn-quick-cat" data-quick-q="895-">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
@@ -600,9 +600,9 @@
       const hasNoRoomSec = subj.sections.some(isSectionNoRoom);
       let modeBadgeHtml = '';
       if (hasOnlineSec) {
-        modeBadgeHtml = '<span class="cat-mode-badge is-online" title="เรียนออนไลน์ / LMS">🌐 Online</span>';
+        modeBadgeHtml = '<span class="cat-mode-badge is-online" title="เรียนออนไลน์ / LMS"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg> Online</span>';
       } else if (hasNoRoomSec) {
-        modeBadgeHtml = '<span class="cat-mode-badge is-noroom" title="ยังไม่ระบุห้องเรียน / ภาคปฏิบัติ–ฝึกงาน">– ไม่ระบุห้อง</span>';
+        modeBadgeHtml = '<span class="cat-mode-badge is-noroom" title="ยังไม่ระบุห้องเรียน / ภาคปฏิบัติ–ฝึกงาน"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ไม่ระบุห้อง</span>';
       }
 
       const secButtonsHtml = subj.sections
@@ -614,7 +614,9 @@
           const secClasses = ['btn-sec-chip'];
           if (isSel) secClasses.push('is-selected');
           if (isSecOnl) secClasses.push('is-online-sec');
-          const chipIcon = isSel ? '✓ ' : isSecOnl ? '🌐 ' : '';
+          const checkIconSvg = `<svg class="chip-icon-svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+          const globeIconSvg = `<svg class="chip-icon-svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>`;
+          const chipIcon = isSel ? checkIconSvg : (isSecOnl ? globeIconSvg : '');
           const chipTitle = `Sec ${sec.sec}: ${isSecOnl ? '[Online] ' : isSecNoR ? '[ไม่ระบุห้อง] ' : ''}${slotHint}`;
           return `<button type="button" class="${secClasses.join(' ')}" data-subj-id="${subj.id}" data-sec="${sec.sec}" title="${escapeHtml(chipTitle)}">${chipIcon}Sec ${sec.sec}</button>`;
         })
@@ -777,7 +779,7 @@
       if (state.ignoreClashes) {
         elClashAlertPill.classList.add('is-muted-pill');
         if (elBtnToggleIgnoreClash) elBtnToggleIgnoreClash.classList.add('is-active');
-        if (elIgnoreClashLabel) elIgnoreClashLabel.textContent = 'มองข้ามแล้ว ✓';
+        if (elIgnoreClashLabel) elIgnoreClashLabel.innerHTML = 'มองข้ามแล้ว <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M20 6 9 17l-5-5"/></svg>';
       } else {
         elClashAlertPill.classList.remove('is-muted-pill');
         if (elBtnToggleIgnoreClash) elBtnToggleIgnoreClash.classList.remove('is-active');
@@ -1273,7 +1275,7 @@
 
         block.dataset.uid = course.uid;
         block.dataset.slotIdx = String(slotIdx);
-        block.title = `${course.code} ${course.nameTh} (Sec ${course.sec})\n${minToTimeStr(slot.start)}–${minToTimeStr(slot.end)} · ห้อง ${course.room || '-'}${isSingleSection ? '\n🔒 วิชานี้มี Section เดียว' : ''}`;
+        block.title = `${course.code} ${course.nameTh} (Sec ${course.sec})\n${minToTimeStr(slot.start)}–${minToTimeStr(slot.end)} · ห้อง ${course.room || '-'}${isSingleSection ? '\n[ล็อค] วิชานี้มี Section เดียว' : ''}`;
 
         const roomText = (course.room || '').replace(/^[,\s-]+|[,\s-]+$/g, '');
         const engName = (course.nameEn || '').trim();
@@ -1845,12 +1847,13 @@
     // Quick jump pills
     if (elDetailModalQuickNav && elDetailModalQuickPills) {
       if (subj.sections && subj.sections.length > 1) {
+        const checkMiniSvg = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:2px"><path d="M20 6 9 17l-5-5"/></svg>`;
         elDetailModalQuickPills.innerHTML = subj.sections
           .map((s) => {
             const isCurr = enrolledCourse && enrolledCourse.sec === s.sec;
             const isFoc = activeSec === s.sec;
             return `<button type="button" class="quick-sec-pill${isCurr ? ' is-current' : ''}${isFoc ? ' is-focused' : ''}" data-jump-sec="${escapeHtml(s.sec)}">
-              ${isCurr ? '✓ ' : ''}Sec ${escapeHtml(s.sec)}
+              ${isCurr ? checkMiniSvg : ''}Sec ${escapeHtml(s.sec)}
             </button>`;
           })
           .join('');
@@ -1871,11 +1874,11 @@
         const isSecOnl = isSectionOnline(sec);
         let roomBadgeHtml = '';
         if (isSecOnl) {
-          roomBadgeHtml = `<span class="sec-room-tag is-online">🌐 ${escapeHtml(sec.room || 'ONLINE')}</span>`;
+          roomBadgeHtml = `<span class="sec-room-tag is-online"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg> ${escapeHtml(sec.room || 'ONLINE')}</span>`;
         } else if (sec.room && sec.room !== '-' && sec.room !== '–' && sec.room !== '---') {
           roomBadgeHtml = `<span class="sec-room-tag">ห้อง ${escapeHtml(sec.room)}</span>`;
         } else {
-          roomBadgeHtml = `<span class="sec-room-tag is-noroom">📍 ไม่ระบุห้องเรียน</span>`;
+          roomBadgeHtml = `<span class="sec-room-tag is-noroom"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ไม่ระบุห้องเรียน</span>`;
         }
 
         // Schedule Slots (Left column)
@@ -2309,7 +2312,7 @@
       const elExportResultTitle = document.getElementById('exportResultTitle');
 
       if (elExportResultTitle) {
-        elExportResultTitle.textContent = 'รูปตารางสอบของคุณพร้อมแล้ว 📝';
+        elExportResultTitle.textContent = 'รูปตารางสอบของคุณพร้อมแล้ว';
       }
       if (elExportResultImg) {
         elExportResultImg.src = activeExportBlobUrl;
